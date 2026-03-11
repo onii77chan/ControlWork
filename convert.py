@@ -12,29 +12,41 @@ def convert_pdf_to_docx(input_path, output_path):
 
 def convert_docx_to_pdf(input_path, output_path):
     try:
-        from docx2pdf import convert
-        convert(input_path, output_path)
+        import mammoth
+        from xhtml2pdf import pisa
+
+        # 1. Convert DOCX to HTML using mammoth
+        with open(input_path, "rb") as docx_file:
+            result = mammoth.convert_to_html(docx_file)
+            html = result.value # The generated HTML
+
+            # Wrap in basic HTML structure to ensure proper encoding and display
+            full_html = f"""
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body {{ font-family: sans-serif; }}
+                </style>
+            </head>
+            <body>
+                {html}
+            </body>
+            </html>
+            """
+
+            # 2. Convert HTML to PDF using xhtml2pdf
+            with open(output_path, "w+b") as pdf_file:
+                pisa_status = pisa.CreatePDF(full_html, dest=pdf_file)
+
+            if pisa_status.err:
+                raise Exception(f"xhtml2pdf error: {pisa_status.err}")
+
     except Exception as e:
-        # docx2pdf requires MS Word to be installed on Windows/Mac,
-        # for a truly headless/Linux environment, LibreOffice is usually better.
-        # Fallback to soffice (LibreOffice) if available:
-        print(f"docx2pdf failed: {e}. Trying LibreOffice...")
-        # Get the directory of output_path
-        out_dir = os.path.dirname(output_path)
-        if not out_dir:
-            out_dir = "."
-
-        # Note: LibreOffice always writes to a file with the same name but .pdf extension in the outdir.
-        # We will rename it afterwards if necessary.
-        subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", out_dir, input_path], check=True)
-
-        # The expected output name from soffice:
-        base_name = os.path.splitext(os.path.basename(input_path))[0]
-        expected_out = os.path.join(out_dir, base_name + ".pdf")
-
-        # If output_path is different from what soffice generated, rename it.
-        if os.path.abspath(expected_out) != os.path.abspath(output_path):
-             os.rename(expected_out, output_path)
+        print(f"docx to pdf conversion failed: {e}")
+        # Fallback to pandoc if mammoth/xhtml2pdf fails or is missing
+        print("Trying fallback to pandoc...")
+        convert_with_pandoc(input_path, output_path)
 
 def convert_with_pandoc(input_path, output_path):
     # Use pandoc for various document conversions (e.g., md to docx, html to md, etc.)

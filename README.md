@@ -13,7 +13,7 @@
 
 2. **Python-скрипт (`convert.py`)**:
    - CLI-утилита для сложных конвертаций документов.
-   - Использует `pdf2docx`, `docx2pdf` (или LibreOffice `soffice` как фолбэк для Linux) и `pandoc`.
+   - Использует `pdf2docx`, `mammoth` с `xhtml2pdf` и `pandoc`. Оптимизировано для работы в окружениях без графических зависимостей, таких как Termux на Android.
 
 ## Структура директорий
 ```
@@ -34,7 +34,6 @@
 - Python 3.x
 - [FFmpeg](https://ffmpeg.org/) (должен быть доступен в переменной `PATH`)
 - [Pandoc](https://pandoc.org/) (для конвертации различных текстовых форматов через Python)
-- [LibreOffice](https://www.libreoffice.org/) (рекомендуется для корректной работы конвертации DOCX <-> PDF в Linux)
 
 ## Настройка и запуск
 
