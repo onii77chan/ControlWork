@@ -40,7 +40,7 @@ lazy_static! {
         m.insert("m4a", vec!["mp3", "wav", "ogg"]);
         m.insert("webm", vec!["mp4", "mp3"]);
 
-        // Документы (через Python convert.py / pandoc / LibreOffice)
+        // Документы (через Python convert.py / pandoc / mammoth + xhtml2pdf)
         m.insert("pdf", vec!["docx"]);
         m.insert("docx", vec!["pdf"]);
         m.insert("md", vec!["docx", "html", "pdf"]);

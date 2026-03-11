@@ -1,3 +1,4 @@
 pdf2docx
-docx2pdf
+mammoth
+xhtml2pdf
 Pillow
